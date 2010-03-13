@@ -1,0 +1,125 @@
+    #fzDoctrinePagedRoutePlugin#
+
+Plugin created to ease creation and management and creating of frontend routes that usually need only list (index) and show pages to the user.
+
+Biggest advantage is that you actually **can't** visit page that will show no items on a list *(higher list-page number than elemts/elements_per_page or lower than 1)*, and you'll get 404 HTTP response instead.
+
+##Requirements##
+
+*Doctrine
+
+Plugin is working with symfony 1.4 and should be working with 1.3 as well. It needs doctrine, as it utilises Doctrine Pager.
+
+##Installation##
+
+To install fzDoctrinePagedRoutePlugin simply execute plugin:install commend:
+
+    ./symfony plugin:install fzDoctrinePagedRoutePlugin
+
+you can install downloaded package as well:
+
+    ./symfony plugin:install fzDoctrinePagedRoutePlugin.tgz
+
+just place downloaded package in your project's root first.
+
+You can also install it manually, unpacking archiwe, placing it's content in your
+project's plugin/ directory, and enabling it in your ProjectConfiguration.class.php file:
+
+config/ProjectConfiguration.class.php
+
+    class ProjectConfiguration extends sfProjectConfiguration
+    {
+        //....//
+        public function setup()
+        {
+            //....//
+            $this->enablePlugins('fzDoctrinePagedRoutePlugin');
+            //....//
+        }
+    }
+
+
+
+##Usage##
+
+Plugin contains one route class: **fzDoctrinePagedRoute** and one route collection class: **fzDoctrineLisPagedRouteCollection**.
+
+You **can** set two settings in your "app.yml" page:
+
+    all:
+      #...
+      fzDoctrinePagedRoutePlugin:
+        page_indicator: page_name_for_url
+        per_page: 5
+
+* page_indicator setting is a word that will be used in list (index) url, like that: /url/to/your/list/**page_name_for_url**/page_number
+* per_page is number (or your own setting name from app.yml tha contains number) of elements shown on a list per page.
+
+###Single route definition###
+
+The **fzDoctrinePagedRoute** one servers to create one route for paged list in **routing.yml** file.
+
+    route_name:
+      class: fzDoctrinePagedRoute
+      url:   /url/to/your/list/:page
+      param: { module: blog, action: index }
+      options:
+        model: Model
+        browse_method: getElements
+        per_page: app_max_per_page
+
+There are three mandatory options:
+
+* model, that tells route class which model should it use for pager,
+* browse_method, which tells which method should it use to create list and pages
+* per_page which tells how many items should be used per page, it overrides setting from **app.yml** if set, and can be omitted if set.
+
+###Routes collection definition###
+
+The **fzDoctrineLisPagedRouteCollection** is a collection route class that creates three routes:
+
+* clean, without page indicator (default for 1st page of list, index action, fzDoctrinePagedRoute type).
+* _paged, which uses page_indicator and page number word at the end (index action, fzDoctrinePagedRoute type)
+* _show which is used to show one element and directs to the module (show action, sfDoctrineRoute type).
+
+Should be set like that:
+
+    route_collection_name:
+      class: fzDoctrineListRouteCollection
+      options:
+        module: module_name
+        model: Model
+        type: object
+        browse_method: getElements
+        per_page: app_max_per_page
+        page_indicator: page_name_for_url
+        show_pattern: :id/:slug
+
+Three new options are mandatory:
+
+* module - passes module_name which will be used as a parameter for the route
+* page_indicator - overrides page_indicator setting from app.yml. It isn't mandatorym and falls back just to the word page which gets append before page number.
+* show_pattern - defines pattern that should be used for _show route, just as you'd set a route for sfDoctrineRoute (since it creates sfDoctrineRoute).
+
+The model, browse_method and per_page options are used the same way as in **fzDoctrinePagedRoute**.
+
+
+###Action usage###
+
+fzDoctrinePagedRoute provides *getPager()* method that returns **DoctrinePager** defined and ready to use in your template.
+
+    class moduleActions extends sfActions
+    {
+
+        public function executeIndex(sfWebRequest $request)
+        {
+            $this->pager = $this->getRoute()->getPager();
+        }
+        //....//
+    }
+
+
+##Changelog##
+
+###Version 1.0.0###
+*fizyk: plugin creation
