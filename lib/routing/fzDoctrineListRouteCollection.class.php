@@ -123,7 +123,7 @@ class fzDoctrineListRouteCollection extends sfRouteCollection
            'action' => 'show'
         );
         $requirements = array(
-            'sf_method' => 'get',
+            'sf_method' => array('get','post'),
             'id' => '\d+'
         );
         

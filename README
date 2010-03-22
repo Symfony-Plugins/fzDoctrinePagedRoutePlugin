@@ -1,4 +1,4 @@
-    #fzDoctrinePagedRoutePlugin#
+#fzDoctrinePagedRoutePlugin#
 
 Plugin created to ease creation and management and creating of frontend routes that usually need only list (index) and show pages to the user.
 
@@ -118,8 +118,3 @@ fzDoctrinePagedRoute provides *getPager()* method that returns **DoctrinePager**
         //....//
     }
 
-
-##Changelog##
-
-###Version 1.0.0###
-*fizyk: plugin creation
